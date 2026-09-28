@@ -36,6 +36,7 @@ $ curl homeserver:8787/ask -d device=Kitchen --data-urlencode "text=what's the w
 ## Contents
 
 - [How it works](#how-it-works)
+- [Where to run it](#where-to-run-it)
 - [Quick start](#quick-start)
 - [Signing in to Amazon](#signing-in-to-amazon)
 - [Using the API](#using-the-api)
@@ -65,10 +66,39 @@ Alexa endpoints the mobile app uses. To get that token, it briefly runs
 serves Amazon's real sign-in page through a proxy bound to your Tailscale IP
 and captures the token when you finish.
 
+## Where to run it
+
+Any Linux or macOS machine on your tailnet will do. alexaproxy uses about
+13 MB of memory, and every client reaches it through Tailscale, so it
+doesn't need to be on the same network as your Echos. The Echos are
+controlled through Amazon's cloud, not over your LAN.
+
+| Where | Good for | Keep in mind |
+| --- | --- | --- |
+| **Your own computer** (laptop, desktop, Mac) | Trying it out; personal use while you're at the computer | It only answers while the computer is on and awake. There's no systemd on macOS: run `alexaproxy serve` in a terminal or tmux, or set up a launchd agent. |
+| **A home server** (Raspberry Pi, NAS, mini PC, spare Linux box) | The usual setup: always on, and your credentials stay in your house | Use `make install-user` or `make install` to [run it as a service](#running-as-a-service). ARM boards need to [sign in from another machine](#logging-in-from-another-machine) once. |
+| **A VPS or cloud VM** (DigitalOcean droplet, Hetzner, Linode, Lightsail, EC2, …) | No hardware at home; always on; the smallest plan is plenty | See the notes below. |
+
+**On a VPS:**
+
+- **Install Tailscale on the VPS** and log it into your tailnet. Then use
+  it like any other tailnet machine: `http://my-vps:8787`.
+- **Block all inbound traffic except SSH** in the provider's firewall.
+  Tailscale doesn't need any open inbound ports. alexaproxy already refuses
+  anything that isn't from your tailnet, and binds the sign-in page to the
+  Tailscale IP only. Blocking at the firewall means strangers can't even
+  reach port 8787.
+- **Amazon will see the VPS's IP address** for the sign-in and for every
+  call, not your home IP. Expect a one-time code or an "unusual sign-in"
+  email the first time. Picking a region near you makes that less likely.
+- **Your Amazon token lives on a machine you rent.** It's stored with mode
+  0600, but anyone with root on the VM, including the provider, could read
+  it. If that matters to you, run it at home instead.
+
 ## Quick start
 
-**You need:** a Linux or macOS machine that's always on and runs
-[Tailscale](https://tailscale.com/download), plus Go 1.25+ to build. The
+**You need:** a Linux or macOS machine ([which one?](#where-to-run-it)) that
+runs [Tailscale](https://tailscale.com/download), plus Go 1.25+ to build. The
 browser sign-in helper is downloaded automatically on x86-64 Linux and on
 macOS. For ARM Linux (e.g. a Raspberry Pi), see
 [Logging in from another machine](#logging-in-from-another-machine).
