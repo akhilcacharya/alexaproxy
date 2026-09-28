@@ -126,8 +126,10 @@ curl -X POST homeserver:8787/auth/login
 # { "state": "preparing", "login_url": "http://100.101.102.103:8788/", ... }
 ```
 
-Open `login_url` in a browser and sign in to Amazon. Type your email by
-hand, and choose to sign in with a password if Amazon offers a passkey (see
+Open `login_url` in a browser and sign in to Amazon. **Sign in with your
+account's mobile number** if you can, since it tends to be the most reliable
+option through the sign-in proxy. If you use your email, type it by hand.
+Choose to sign in with a password if Amazon offers a passkey (see
 [why](#signing-in-to-amazon)). Then confirm:
 
 ```bash
@@ -155,9 +157,15 @@ signed in, the token is checked with Amazon and saved to `credentials.json`.
 
 Tips:
 
-- **Type the email by hand.** Amazon's page has a hidden second email field,
-  and autofill or a password manager can fill the wrong one. That shows up as
-  *"Enter a valid email or mobile number"*. A private window avoids it.
+- **Sign in with your phone number rather than your email.** Through the
+  proxy, the email field sometimes rejects a correct address with
+  *"Enter a valid email or mobile number"*. Entering the mobile number on
+  your Amazon account instead has worked when the email didn't. This is a
+  known quirk, not a guarantee; if your account has no phone number, use the
+  email tips below.
+- **If you use your email, type it by hand.** Amazon's page has a hidden
+  second email field, and autofill or a password manager can fill the wrong
+  one, which also causes that error. A private window helps.
 - **Use your password, not a passkey.** Passkeys only work on amazon.com
   itself over HTTPS, not through the sign-in proxy. Choose "sign in another
   way" or "use password" if prompted. One-time codes (2FA) work fine.
@@ -530,7 +538,7 @@ Each takes `-h`.
 
 | Symptom | Fix |
 | --- | --- |
-| "Enter a valid email or mobile number" on the Amazon page | Autofill filled the hidden field. Type the email by hand, ideally in a private window. |
+| "Enter a valid email or mobile number" on the Amazon page | Sign in with your account's mobile number instead of the email. Or type the email by hand in a private window (autofill can fill a hidden field). |
 | Passkey prompt fails, or sign-in loops | Choose "sign in another way" / password. Passkeys can't work through the proxy. |
 | `login_url` doesn't load | Open it from a device on the tailnet, using the exact IP:8788 URL. Check that your ACLs allow port 8788. |
 | `401 login_required` | The Amazon login is missing or expired. Sign in again (`POST /auth/login`). |

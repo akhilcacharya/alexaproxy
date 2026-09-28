@@ -104,7 +104,8 @@ type loginRequired struct {
 
 const howToFixLogin = "The Alexa login is missing or expired and a human must sign in. " +
 	"POST /auth/login, then open the returned login_url in a browser on a tailnet device and sign in to Amazon " +
-	"(type the email by hand; if offered a passkey, choose to sign in with a password). " +
+	"(signing in with the account's mobile number is most reliable; otherwise type the email by hand; " +
+	"if offered a passkey, choose to sign in with a password). " +
 	"GET /auth/login?wait=300 blocks until it finishes."
 
 func (s *Server) writeError(w http.ResponseWriter, err error) {

@@ -95,7 +95,8 @@ Logging in
   1. curl -X POST ` + base + `/auth/login
   2. Open the "login_url" it returns in a browser on any tailnet device and
      sign in to Amazon (use -d country=amazon.co.uk etc. outside the US).
-     Type the email by hand, and pick "sign in with password" over passkeys.
+     Sign in with your mobile number if you can (most reliable; otherwise
+     type the email by hand), and pick "sign in with password" over passkeys.
   3. curl "` + base + `/auth/login?wait=300"   # blocks until it succeeds
   The refresh token is saved to disk and reused across restarts.
 `)
@@ -144,7 +145,8 @@ func (s *Server) agentGuide(w http.ResponseWriter, r *http.Request, _ input) (an
 		p("- **Alexa calls will fail until a human signs in.** Do not retry them. Tell the user:\n")
 		p("  1. Run `curl -X POST %s/auth/login` (you may do this for them) and give them the `login_url` it returns.\n", base)
 		p("  2. They open it in a browser on a tailnet device and sign in to Amazon ")
-		p("(type the email by hand; if offered a passkey, choose to sign in with a password).\n")
+		p("(signing in with the account's mobile number is most reliable; otherwise type the email by hand; ")
+		p("if offered a passkey, choose to sign in with a password).\n")
 		p("  3. `curl \"%s/auth/login?wait=300\"` returns `\"state\": \"succeeded\"` when done.\n", base)
 	}
 	if d := s.defaultDevice(); d != nil && trusted(r) {
