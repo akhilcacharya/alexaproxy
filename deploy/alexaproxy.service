@@ -1,0 +1,33 @@
+[Unit]
+Description=alexaproxy - Alexa HTTP API for the tailnet
+Documentation=https://github.com/akhilcacharya/alexaproxy
+Wants=network-online.target
+After=network-online.target tailscaled.service
+
+[Service]
+ExecStart=/usr/local/bin/alexaproxy serve
+# Optional settings, e.g. ALEXAPROXY_API_KEY=... (needed for Tailscale Funnel)
+# or ALEXAPROXY_DEFAULT_DEVICE=Kitchen. Keep it root-owned, mode 0600.
+EnvironmentFile=-/etc/alexaproxy.env
+Restart=on-failure
+RestartSec=5
+
+# Runs as a throwaway user; credentials live in /var/lib/alexaproxy
+# (exposed to the process as $STATE_DIRECTORY, which alexaproxy reads).
+DynamicUser=yes
+StateDirectory=alexaproxy
+StateDirectoryMode=0700
+# alexa-cookie-cli (the login helper) is a packaged Node app and wants a HOME.
+Environment=HOME=/var/lib/alexaproxy
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target

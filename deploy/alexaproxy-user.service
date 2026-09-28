@@ -1,0 +1,16 @@
+# User-level unit: no root needed. Installed by `make install-user`.
+# Starts at boot only if lingering is enabled: loginctl enable-linger $USER
+[Unit]
+Description=alexaproxy - Alexa HTTP API for the tailnet (user service)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+ExecStart=%h/.local/bin/alexaproxy serve --state-dir %h/.config/alexaproxy
+# Optional: device used when a request omits `device`.
+#Environment=ALEXAPROXY_DEFAULT_DEVICE=Kitchen
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

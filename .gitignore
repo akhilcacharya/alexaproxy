@@ -1,0 +1,8 @@
+# build output
+bin/
+dist/
+node_modules/
+
+# local noise
+.DS_Store
+*.log
